@@ -1,0 +1,62 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Corrected experimental data points
+run9 = {  # Right-skewed distribution (red circles)
+    'u_star': [0.1, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 2.0, 3.0, 5.0],
+    'frac': [0.95, 0.85, 0.7, 0.5, 0.35, 0.2, 0.1, 0.05, 0.02, 0.005]
+}
+
+run10 = {  # Evenly distributed (black squares)
+    'u_star': [0.1, 0.3, 0.5, 0.7, 1.0, 1.5, 2.0, 3.0, 5.0, 7.0, 10.0],
+    'frac': [0.98, 0.9, 0.8, 0.7, 0.55, 0.4, 0.3, 0.15, 0.05, 0.02, 0.005]
+}
+
+run15 = {  # Right-skewed distribution (blue triangles)
+    'u_star': [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0, 1.5, 2.0, 3.0, 5.0],
+    'frac': [0.99, 0.97, 0.95, 0.9, 0.85, 0.8, 0.7, 0.6, 0.45, 0.3, 0.15, 0.05]
+}
+
+# Model curves (logarithmic scale)
+u_star_model = np.logspace(-1, 1, 100)  # 0.1 to 10 m/s
+rock_n_roll = np.exp(-2.5 * u_star_model)  # Original model
+revised = np.exp(-1.8 * u_star_model)      # Revised by Blasi
+
+# Create the plot
+plt.figure(figsize=(12, 6))
+
+# Plot experimental data with correct skewness
+plt.plot(run9['u_star'], run9['frac'], 'ro', markersize=8, label='RUN 9 (10μm) - Right-skewed')
+plt.plot(run10['u_star'], run10['frac'], 'ks', markersize=8, label='RUN 10 (20μm) - Even')
+plt.plot(run15['u_star'], run15['frac'], 'b^', markersize=8, label='RUN 15 (20μm) - Right-skewed')
+
+# Plot model curves
+plt.plot(u_star_model, rock_n_roll, 'k--', linewidth=2, label='Rock \'n\' Roll')
+plt.plot(u_star_model, revised, 'k-', linewidth=2, label='Revised by Blasi')
+
+# Formatting to match original log scale
+plt.xscale('log')
+plt.xlabel('Friction Velocity (m/s)', fontsize=12)
+plt.ylabel('Remained Fraction', fontsize=12)
+plt.title('Corrected Experimental Data vs Models', fontsize=14)
+plt.grid(True, which='both', linestyle='--', alpha=0.5)
+plt.legend(fontsize=10, bbox_to_anchor=(1.05, 1))
+plt.xlim(0.08, 12)
+plt.ylim(0, 1.05)
+plt.xticks([0.1, 0.2, 0.5, 1, 2, 5, 10], ['0.1', '0.2', '0.5', '1', '2', '5', '10'])
+plt.yticks(np.arange(0, 1.1, 0.1))
+plt.tight_layout()
+plt.show()
+
+# Print the corrected values
+print("RUN 9 (Right-skewed):")
+for u, f in zip(run9['u_star'], run9['frac']):
+    print(f"u*={u:.1f} m/s, fraction={f:.2f}")
+    
+print("\nRUN 10 (Evenly distributed):")
+for u, f in zip(run10['u_star'], run10['frac']):
+    print(f"u*={u:.1f} m/s, fraction={f:.2f}")
+    
+print("\nRUN 15 (Right-skewed):")
+for u, f in zip(run15['u_star'], run15['frac']):
+    print(f"u*={u:.1f} m/s, fraction={f:.2f}")
