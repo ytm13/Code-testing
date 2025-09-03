@@ -1,8 +1,9 @@
-# plotting 10μm alumina particles with RNR with Biasi and Base RNR model
+# plotting 10μm and 20μm alumina particles with RNR with Biasi and Base RNR model
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy import integrate
 from scipy.special import erf
 
 # retrieve information from csv to plot RUNS
@@ -21,13 +22,12 @@ dynamic_viscosity = (temperature ** 1.5) * 1.458 * 10**(-6) / (temperature + 110
 
 # Aerodynamic force couple 
 drag_amp_fact = 100  # r/a value found
-kine_viscosity = 1.96e-5  # kinematic viscosity
 
 # surface energies and adhesive forces 
 surface_energy = 0.56  # J/m²
 
 # friction velocity range 
-fric_velo_range = np.logspace(-2, 2, 200)  # 0.1m/s to 10m/s
+fric_velo_range = np.logspace(-1, 1, 200)  # 0.1m/s to 10m/s
 t_eval = 1.0  # seconds
 
 def adhesion(f_prime_a, sigma_prime, mean_f_prime): 
@@ -81,20 +81,21 @@ for R in R_list:
             
         # biasi adhesion pdf calculation 
         adhesion_biasi = adhesion(f_prime_a_range, sigma_prime_biasi, mean_f_prime_biasi)
-        adhesion_biasi /= np.trapezoid(adhesion_biasi, f_prime_a_range)
+        adhesion_biasi /= integrate.simpson(adhesion_biasi, f_prime_a_range)
         p_biasi = resuspension_p(fa, mean_force_couple, var_force, n_theta)  # find resuspension fraction p
-        remain_frac_values_biasi.append(np.trapezoid(adhesion_biasi * np.exp(-p_biasi * t_eval), f_prime_a_range)) # remain fraction fR(t)
+        remain_frac_values_biasi.append(integrate.simpson(adhesion_biasi * np.exp(-p_biasi * t_eval), f_prime_a_range)) # remain fraction fR(t)
 
         # base non-biasi adhesion pdf calculation 
         adhesion_nonbiasi = adhesion(f_prime_a_range, sigma_prime_nonbiasi, mean_f_prime_nonbiasi)
-        adhesion_nonbiasi /= np.trapezoid(adhesion_nonbiasi, f_prime_a_range)
+        adhesion_nonbiasi /= integrate.simpson(adhesion_nonbiasi, f_prime_a_range)
         p_nonbiasi = resuspension_p(fa, mean_force_couple, var_force, n_theta)  # find resuspension fraction p
-        remain_frac_values_nonbiasi.append(np.trapezoid(adhesion_nonbiasi * np.exp(-p_nonbiasi * t_eval), f_prime_a_range)) # remain fraction fR(t)
+        remain_frac_values_nonbiasi.append(integrate.simpson(adhesion_nonbiasi * np.exp(-p_nonbiasi * t_eval), f_prime_a_range)) # remain fraction fR(t)
 
         ''' # instantaneous resuspension rate lambda
         integrand_lambda = adhesion_values * p_values * np.exp(-p_values * t_eval)
-        p_rate_lambda = np.trapezoid(integrand_lambda, f_prime_a_range)
+        p_rate_lambda = integrate.simpson(integrand_lambda, f_prime_a_range)
         p_rate_lambda_values.append(p_rate_lambda) '''
+    
     results1[mean_f_prime_biasi] = remain_frac_values_biasi
     results2[mean_f_prime_nonbiasi] = remain_frac_values_nonbiasi
 
