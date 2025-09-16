@@ -1,4 +1,4 @@
-# GPT HELPED
+# help.
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +10,7 @@ data = pd.read_csv("11microndataset.csv", header=1)
 
 # Parameters for RNR models 
 gas_density = 1.92       # kg/m³
-kine_viscosity = 1.52e-5 # m²/s
+kine_viscosity = 1.96e-5 # m²/s
 R = 5.4e-6 /2           # particle radius (5.4 µm diameter)
 temperature = 750        # K
 
@@ -18,11 +18,11 @@ temperature = 750        # K
 dynamic_viscosity = (temperature ** 1.5) * 1.458e-6 / (temperature + 110.4)
 
 # surface energy for smooth (non-sintered)
-surface_energy = 0.56  # J/m²
+surface_energy = 0.15  # J/m²
 
 # friction velocity range
 fric_velo_range = np.logspace(-2, 1, 200)  # 0.1 m/s → 10 m/s
-t_eval = 1000  # seconds
+t_eval = 1  # seconds
 
 # Adhesion PDF (log-normal)
 def adhesion(f_prime_a, sigma_prime, mean_f_prime): 
@@ -36,16 +36,15 @@ def resuspension_p(fa, mean_force_couple, var_force, n_theta):
     p_divisor = 0.5 * (1 + erf((fa - mean_force_couple) / np.sqrt(2 * var_force)))
     return n_theta * np.exp(p_dividend) / p_divisor
 
-# =============================
-# Case 1: Direct experimental (no Biasi)
-# =============================
+# EXPERIMENTAL VALUES ONLY
+
 # Smooth adhesive force baseline
 smooth_fa = 1.5 * np.pi * surface_energy * R  
 
 # Experimental means (from paper)
-mean_f_prime_unsinter = 0.003   # unsintered, 5.4 µm, 750 °C
-mean_f_prime_sinter   = 0.013519   # sintered,   5.4 µm, 750 °C
-sigma_prime = np.exp(0.3)          # assume same spread for both
+mean_f_prime_unsinter = 0.006   # unsintered, 5.4 µm, 750 °C
+mean_f_prime_sinter   = 0.013519   # sintered, 5.4 µm, 750 °C
+sigma_prime = np.exp(0.3)  # assume same sd
 
 f_prime_a_range = np.logspace(-4, 1, 2000)
 
@@ -77,10 +76,8 @@ for fric_velo in fric_velo_range:
     remain_frac_values_unsinter_exp.append(integrate.simpson(adhesion_unsinter * np.exp(-p_unsinter * t_eval), f_prime_a_range))
     remain_frac_values_sinter_exp.append(integrate.simpson(adhesion_sinter * np.exp(-p_sinter * t_eval), f_prime_a_range))
 
+# THEORETICAL WITH BIASI 
 
-# =============================
-# Case 2: Generic Biasi model
-# =============================
 # Biasi distribution parameters
 sigma_prime_biasi = 1.8 + 0.136 * R ** 1.4
 mean_f_prime_biasi = 0.016 - 0.0023 * R ** 0.545
@@ -115,30 +112,30 @@ for fric_velo in fric_velo_range:
     remain_frac_values_sinter_biasi.append(integrate.simpson(adhesion_sinter * np.exp(-p_sinter * t_eval), f_prime_a_range))
 
 
-# =============================
 # Plot results
-# =============================
+
 plt.figure(figsize=(9,6))
 
-# Experimental scatter (from file)
+# Experimental from sinter experiments (zhao sinter paper)
 plt.scatter(data["XU"], data["YU"], marker="o", label="Exp. Unsintered")
-plt.scatter(data["X5"], data["Y5"], marker="^", label="Exp. Sintered 500C 9h")
-plt.scatter(data["X75"], data["Y75"], marker="s", label="Exp. Sintered 750C 9h")
-
-plt.scatter(data["X9"], data["Y9"], marker="o", label="RUN9")
+'''plt.scatter(data["X5"], data["Y5"], marker="o", label="Exp. Sintered 500C 9h")
+plt.scatter(data["X75"], data["Y75"], marker="o", label="Exp. Sintered 750C 9h")'''
+'''
+# Experimental from Hall experiments (zhang rnr paper)
+plt.scatter(data["X9"], data["Y9"], marker="s", label="RUN9")
 plt.scatter(data["X10"], data["Y10"], marker="s", label="RUN10")
-plt.scatter(data["X15"], data["Y15"], marker="^", label="RUN15")
-
-# Direct experimental model
+plt.scatter(data["X15"], data["Y15"], marker="s", label="RUN15")
+'''
+# Experimental model
 plt.plot(fric_velo_range, remain_frac_values_unsinter_exp, '-', label="Unsintered (exp mean)")
 plt.plot(fric_velo_range, remain_frac_values_sinter_exp, '-', label="Sintered (exp mean)")
-
-# Generic Biasi model
+\
+# Biasi model
 plt.plot(fric_velo_range, remain_frac_values_unsinter_biasi, '--', label="Unsintered (Biasi)")
 plt.plot(fric_velo_range, remain_frac_values_sinter_biasi, '--', label="Sintered (Biasi-scaled)")
 
-plt.title("Comparison of Adhesion Models: Experimental vs Biasi")
-plt.xlabel("Friction velocity (m/s)")
+plt.title("Experimental vs Biasi Models")
+plt.xlabel("Friction velocity u* (m/s)")
 plt.ylabel("Remaining fraction")
 plt.xscale("log")
 plt.ylim(0,1.05)

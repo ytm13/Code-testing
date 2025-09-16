@@ -1,4 +1,5 @@
-# plotting 10μm and 20μm alumina particles with RNR with Biasi and Base RNR model
+# plotting 10μm and 20μm alumina particles with RNR with Biasi and Base RNR model 
+# TESTING WHATS WRONG
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,27 +13,27 @@ data2 = pd.read_csv("rnr 20micron alumina.csv", header=1)
 
 # Paramters for RNR models 
 # fluid and pipe parameters 
-gas_density = 1.92  # kg/m³
-kine_viscosity = 1.96e-5  # m²/s
+gas_density = 1.92  # kg/m³ 1.92
+kine_viscosity = 1.96e-5  # m²/s 1.96e-5 increase then it move to the right very slightly which might be it!
 R_list = [10e-6, 20e-6]  # particle radii (10μm, 20μm) 
-temperature = 748 # K
+temperature = 748 # K 700 + 273.15 lowk this does nothing
 
 # dynamic viscosity
 dynamic_viscosity = (temperature ** 1.5) * 1.458 * 10**(-6) / (temperature + 110.4) 
 
 # Aerodynamic force couple 
-drag_amp_fact = 100  # r/a value found
+drag_amp_fact = 100  # r/a value found 100
 
 # surface energies and adhesive forces 
-surface_energy = 0.56  # J/m²
+surface_energy = 0.56  # J/m² 0.56
 
 # friction velocity range 
 fric_velo_range = np.logspace(-1, 1, 200)  # 0.1m/s to 10m/s
-t_eval = 0.01  # seconds
+t_eval = 0.1  # seconds 1.0, decrease in time moves the graph to the right 
 
 def adhesion(f_prime_a, sigma_prime, mean_f_prime): 
     adhe_front_divisor = np.sqrt(2 * np.pi) * f_prime_a * np.log(sigma_prime) 
-    adhe_back = (-0.5) * ((np.log(f_prime_a / mean_f_prime) / np.log(sigma_prime)) ** 2)
+    adhe_back = (-0.5) * ((np.log(f_prime_a / mean_f_prime) / np.log(sigma_prime)) ** 2) 
     adhesion_forces = np.exp(adhe_back) / adhe_front_divisor
     return adhesion_forces
 
@@ -56,11 +57,11 @@ for R in R_list:
     remain_frac_values_nonbiasi = []
 
     # Adhesive force for smooth surface
-    smooth_fa = 1.5 * np.pi * surface_energy * R  
+    smooth_fa = 1.5 * np.pi * surface_energy * R   # 1.5 * np.pi * surface_energy * R 
 
     # biasi distribution parameters for differing particle size
-    sigma_prime_biasi = 1.8 + 0.136 * R ** 1.4
-    mean_f_prime_biasi = 0.016 - 0.0023 * R ** 0.545
+    sigma_prime_biasi = 1.8 + 0.136 * R ** 1.4  #1.8 + 0.136 * R ** 1.4, 3 is good
+    mean_f_prime_biasi = 0.016 - 0.0023 * R ** 0.545  #0.016 - 0.0023 * R ** 0.545, 0.02 is good 
 
     # non-biasi base distribution parameters for differing particle size
     mean_f_prime_nonbiasi = 0.027
@@ -70,12 +71,16 @@ for R in R_list:
         pv2 = gas_density * (kine_viscosity ** 2)
         inner_prod = R * fric_velo / kine_viscosity
 
-        mean_force_couple = pv2 * 10.45 * (1 + (300 * (inner_prod)**(-0.31))) * (inner_prod ** 2.31)
-        mean_fluc_force = 0.2 * mean_force_couple
+        '''lift_force = pv2 * 20.9 * inner_prod**2.31
+        drag_force = pv2 * 32 * inner_prod**2
+        mean_force_couple = 0.5 * lift_force + drag_amp_fact * drag_force
+'''
+        mean_force_couple = pv2 * 10.45 * (1 + (300 * (inner_prod**(-0.31)))) * inner_prod ** 2.31
+        mean_fluc_force = 0.2 * mean_force_couple  # 0.2
         var_force = mean_fluc_force ** 2  # variance 
 
         # frequency of forcing motion 
-        n_theta = 0.00658 * (fric_velo**2 / kine_viscosity)  # approx
+        n_theta = 0.00658 * (fric_velo**2 / kine_viscosity)  # approx  0.00658 
 
         fa = f_prime_a_range * smooth_fa
             
@@ -93,9 +98,8 @@ for R in R_list:
 
         ''' # instantaneous resuspension rate lambda
         integrand_lambda = adhesion_values * p_values * np.exp(-p_values * t_eval)
-        p_rate_lambda = integrate.simpson(integrand_lambda, f_prime_a_range)
+        p_rate_lambda = np.trapezoid(integrand_lambda, f_prime_a_range)
         p_rate_lambda_values.append(p_rate_lambda) '''
-    
     results1[mean_f_prime_biasi] = remain_frac_values_biasi
     results2[mean_f_prime_nonbiasi] = remain_frac_values_nonbiasi
 

@@ -1,0 +1,448 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{listings}
+\usepackage{float} % For [H] positioning
+\usepackage{subcaption} % For subfigures
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{gensymb}
+\usepackage{textgreek}
+\usepackage[
+backend=biber,
+style=authoryear,
+sorting=nyt
+]{biblatex}
+\addbibresource{internrepbib.bib}
+
+
+\begin{document}
+
+
+\begin{titlepage}
+    \centering
+    \vspace*{1in} % Adjust vertical spacing as needed
+    {\Huge\bfseries Resuspension of graphite dust particles in a HTGR through the Rock n Roll model} \\
+    \vspace{0.5in}
+    {\Large Internship Report} \\
+    \vspace{0.1in}
+    {\Large Yin Thu Min} \\
+    \vspace{0.2in}
+    Singapore Nuclear Research and Safety Institute \\
+    \vspace{0.5in}
+    \vfill{July-September 2025}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+
+\setstretch{1.2}
+\section{Abstract}
+
+The resuspension of graphite dust within a High Temperature Gas Cooled Reactor (HTGR) with a pebble bed core is an area worth looking into in reactor safety analysis not only during an accident scenario (such as loss of coolant accidents, water ingress accidents) but also under normal working conditions. The start-up conditions after 
+
+This report aims to clarify and give a comprehensive view on graphite dust resuspension in the cooling system of the HTGR, and how this graphite dust could be detrimental to the maintenance and operation of the reactor. 
+
+This report analyses said resuspension, and looks into the effect of various parameters such as particle-substrate adhesion, particle size and fluid flow characteristics on variables such as the instantaneous resuspension fraction and remain fraction. 
+
+The results show that previous data collected from the resuspension experiments carried out by Reeks and Hall are validated by the in-house code, with some differences possibly attributed to [insert shit here]. The relationships between the variables as seen from the generated graphs are also supported by theory. 
+
+significance of dust in a source term analysis 
+non-negligible amoutn of dust generatored 
+high surface area and porosity of dust, can trap a lot of radionuclides 
+loca and water ingress
+speed up of the helium flow will resuspend the dust 
+intern develop the resus model to calc the amt of dust removed frmo the surface
+
+
+
+lack experiemntal data 
+need to test the models against the actual experimental data or actual data from avr, htr10, httr, htrpm
+the movement of hte balls and the discahrging tube is different for every single reactor, so the dust generation and shape will be different as well 
+operation history of the reactor 
+
+
+\clearpage
+
+
+\section{Introduction}
+With increasing interest in nuclear energy as a long-term energy plan within the region, countries are actively developing future deployment plans and investing in infrastructure. However, as a small nation with various political interests within the region and little land space to work with, exploring the suitability for the implementation of nuclear energy in Singapore remains of utmost importance. In particular, Singapore needs to perform safety analyses in order to convince the government and the public that the implementation of nuclear power is safe for the island. This includes establishing a strong regulatory framework, setting stringent safety standards, waste management strategies, emergency preparedness, and alignment with global best practices.
+
+A particular nuclear scenario that research institutions have been looking into is loss of coolant accidents (LOCA) which would result in the melting of the nuclear reactor core. The main safety concern is always that during a LOCA, there is the possibility of an uncontrollable release of radioactive material into the surroundings, which would contaminate the air, soil and water, causing harm to residents. Due to Singapore's small size, this release could cover the entire island, and even cross international boundaries, posing a health risk to residents of Malaysia or Indonesia as well. Thus, utilising reactor designs that will decrease the size of this danger zone and give the operators and engineers enough time to resolve accidents is of utmost importance. The study of Generation IV reactors that improve safety, efficiency, cost and sustainability is thus highly relevant if Singapore wishes to implement nuclear energy.
+
+Within this category, High Temperature Gas Cooled Reactors are a top contender for Singapore as well, as it is nearly impossible for a core meltdown to happen because of the large heat capacity of the core graphite, low power density, negative reactivity feedback and heat-resistant materials used (\cite{TAKAMATSU2014379}). The low radioactivity release exhibited during accident scenarios, would keep the exclusion zone to a minimum if an accident does happen. They exhibit nearly 5 magnitudes of lower radioactivity than the Pressure Water Reactor, another Generation IV reactor, under said accident conditions as severe core damage is unlikely to happen (\cite{ZHANG20091212}). Therefore the focus of current research on HTGR has pivoted slightly towards its normal operating conditions as well. 
+
+
+\subsubsection{High Temperature Gas-cooled Reactors (HTGR)}
+With advances in reactor design and technologies, the newest Generation IV civilian nuclear reactors have passively safe designs, meaning they use inherent safety features instead of active action to reduce the hazardous effects of an accident. Key aspects of this approach include the use of equipment which reduces the chance of human error, prevents unexpected operational disturbances, increases redundancy, and in the event of an accident will confine adverse effects to the plant itself. 
+
+Older reactor safety systems are "active" in the sense that it requires mechanical or electrical energy to operate these safety systems, such as back-up generators that are used to power the emergency cooling system. Passively safe designs, on the other hand, depend on physical phenomena such as gravity, natural convection, and conduction to keep reactor under control in the event of loss of cooling, sudden SCRAMs or electricity cutoffs.  
+
+The fundamental safety functions in a HTGR can be divided into three parts: 1. Reactivity control, 2. Control over cooling, 3. Control over radioactive materials. 
+
+The reactor core design ensures that the maximum fuel element temperature limit will never be exceeded even under accident conditions, preventing a complete meltdown. If reactor core temperatures increase, an active core cooling system is not required for residual heat removal to the atmosphere as this can be done so through passive heat transfer systems. The reactor core is contained within a ventilated primary cavity which restricts the radioactivity
+release into the environment. 
+
+In particular, HTGRs have a negative temperature coefficient, meaning as the core increases in temperature, the reactivity of the reactor actually decreases instead, reducing the probaility of a runaway chain reaction, and decreasing the chances of a high-impact accident occurring as well. It would mean that all operational and accidental situations could be handled even without control rods if necessary. This is a feature of the pebble bed HTGRs, which use graphite spherical fuel elements called pebbles. These graphite pebbles contain thousands of tristructural-isotropic (TRISO) particles with fuel kernels in their centres. The outer pyrolytic graphite section acts as a neutron moderator to reduce the speed of neutrons ejected from the fuel kernel which converts them into "thermal neutrons" which are more likely to be absorbed by the uranium atoms and continue the chain reaction by emitting fast moving neutrons as well. As the temperature of the reactor increases, the velocity of the neutrons increases as well, which reduces the probability of it starting a chain reaction. This causes the reactivity of the core to actually decrease, and results in a negative temperature coefficient. 
+
+\section{Graphite dust in HTGR}
+
+The graphite pebbles make their way through the reactor core in a “multi-pass” pattern, continually charging and discharging the fuel elements. At the bottom of the core, the pebbles pass through a chute, and each individual element is analysed to determine its burnup. Fuel elements which have not reached their limit are returned to the reactor core from the top of the containment, together with new fuel elements. 
+
+Due to the temperature within the reactor reaching 650$^{\circ}$C to 950$^{\circ}$C during normal operating conditions, this heat and the constant friction between the shifting elements or between the elements and the reactor walls generate copious amounts of graphite dust every day while in operation. At the end of the AVR test reactor's operation, after running for about 21 years, it generated more than 20kg of graphite dust (\cite{kiss11}). In the Chinese HTR-10 reactor, the dust generation was estimated to be about 2.74kg per year of operation (\cite{LUO201735}). For the Japanese HTTR, it was estimated to be about 2.5kg per year (\cite{Sriyono18}). Some higher estimates even reach 14g [FROM A SIMULATION] of graphite dust per day. With the intended operation life cycle of HTGRs being 60 years, the mass of graphite dust being generated would amount to more than 150kg over the course of its life cycle. 
+
+This graphite dust can be carried by the coolant (in the case of HTGRs, it is helium gas) and deposited at different points within the reactor depending on the adhesive forces between the graphite particles and the duct wall, and the force at which the graphite particles impact the wall surface. After deposition on the wall surface, the graphite particles experience forces of attraction from the substrate and drag and lift forces from the flow of helium. The balance of these forces together with the energy transferred to the particles from the turbulent bursts determine whether the dust particles will be resuspended into the helium flow or remain deposited onto the wall surface. 
+
+Granted there are other mechanisms at work when considering resuspension of graphite particles. If the dust particles are left in this high temperature environment for an extended period of time, the effect of sintering between the particles could increase the adhesion of the particle onto the wall surface. The mechanism of multilayer dust deposition and resuspension is also different from that of single-layer deposition and resuspension, which is better documented. However this paper will only consider single-layer dust resuspension through the Rock'N'Roll model. 
+
+One possible issue with this graphite dust is that radionuclides generated in the reactor core could bind to the graphite dust, which can then be carried off by the fluid flow and migrate to other components in the primary loop of the HTGR, causing other components to become radioactive as well. This could complicate things like maintenance and accidents blabla
+
+\section{Particle and Fluid Flow characteristics}
+
+\subsection{Fluid Flow characteristics}
+
+Majority of the graphite dust equivalent spherical particle diameters range from 0.3μm to 8μm, with the mean size being 2.71μm (\cite{PENG2013785}). Given that the Rock'N'Roll model is valid only when the dimensionless wall coordinate $y^+$ is smaller than or equal to 5, this can be used to calculate the actual distance from the wall. This value of $y^+$ refers to the distance to which the laminar boundary layer in the turbulent flow extends to. 
+With 
+\begin{equation}\label{1}
+    y^+ = \frac{y \,u^*}{\nu}
+\end{equation}
+
+\begin{equation}\label{2}
+    Re = \frac{\rho ud}{\mu}
+\end{equation}
+
+\begin{equation}\label{3}
+    f_f = 0.158 Re^{-0.25}
+\end{equation}
+
+\begin{equation}\label{4}
+    u^* = u \sqrt{\frac{f_f}{2}}
+\end{equation}
+
+,  \( y \) can be calculated, where \(u^*\) is friciton velocity, \(\nu\) is kinematic viscosity, \(\mu\) is dynamic viscosity, and \(f_f\) is the friction factor (\cite{Chanson09}). It is estimated to be about 80μm [IS THIS ACCURATE?] under normal operating conditions within the HTGR (Table 1). This is considerably larger than the diameter of the dust particle size that is considered under mono-layer deposition and resuspension, and thus it can be concluded that the dust particle will always be found under the laminar boundary layer. 
+
+\begin{table}
+    \centering
+
+    \begin{tabular}{ccc}
+         Parameter&  Units& Value\\
+         Temperature \([T]\)& Kelvin (K) & \(748\)\\
+         Density \([\rho]\)& kg/$m^3$  & \(1.92\)\\
+         Pressure \([p]\) & Megapascals (MPa) & \(3\)\\
+         Kinematic viscosity \([\nu]\)&  $m^2$/s& \(1.96\times $10^{-5}$\)\\
+         Dynamic viscosity \([\mu]\)&  Pa·s& \(3.47\times10^{-5}\)\\
+         Fluid velocity \([u]\)& m/s & \(22\) \\
+         Cooling 
+    \end{tabular}
+\caption{Table 1: Fluid parameters}
+\label{tab:1}
+    
+    
+\end{table}
+22 might be an underestimation 
+
+\subsubsection{Aerodynamic force couple}
+The aerodynamic force couple acting on the particle is given by: 
+\begin{equation}\label{5}
+        F(t) = \frac{1}{2}F_L  + \frac{r}{a}F_D,
+\end{equation}
+Where \(F_L\) and \(F_D\) refer to the aerodynamic lift and drag force respectively. After expansion and simplification, this equation can be rewritten as: 
+\begin{equation}\label{6}
+\frac{\langle F \rangle}{\rho \nu^2} = 10.45 \left[ 1 + 300 \left( r^+ \right)^{-0.31} \right] \left( r^+ \right)^{2.31}
+\end{equation}
+where 
+\begin{equation}\label{7}
+        r^+ = \frac{ru^*}{\nu}
+\end{equation}
+refers to the dimensionless radius of the dust particle
+
+\subsubsection{Drag force}
+
+When a solid body, however small, moves through a fluid, it will resist the motion of the fluid, and by Newton's Third Law, the fluid will resist its motion as well. This creates a fluid drag force, or fluid resistance. The drag force can be separated into two distinct types of drag, frictional drag and form drag. Friction drag is caused by the friction between the fluid and the surface of the particle, and is proportional to said velocity. Form drag is caused by the pressure differences created around the particle as the fluid flows around the object, and is dependent on the cross-sectional area of the body. Form drag is not the dominant drag force because of the small size of the particle and as such this report will primarily focus on friction drag. 
+
+The approximation for the friction drag force on a fixed sphere in contact with a fixed plane wall when the fluid motion is assumed to be a uniform linear shear flow (\cite{ONEILL19681293}) is given by:
+\begin{equation}\label{8}
+\frac{\langle F_D \rangle}{\rho \nu^2} \approx 32 \left( \frac{r u^*}{\nu} \right)^2
+\end{equation}
+
+\subsubsection{Lift Force}
+
+The lift force corresponds to the component of the force exerted by the fluid flow onto the particle that is perpendicular to the oncoming flow direction. The magnitude and direction of the lift force depends on the shape of the particle, relative velocity between the fluid and particle (Saffman lift force), and the rotation of the particle (Magnus force). As the pressure under the particle increases, the difference in pressure between the bottom and top of the particle increases, which generates a force that lifts the particle away from the substrate surface.
+
+Surface roughness can change the mean fluid-induced lift forces that act on a particle deposited onto a surface. The force decreases when the particle is deposited within roughness elements and increases when the particle is on top of a larger surface microstructure (\cite{HALLD1988}).
+
+The approximation for lift force is most accurate for higher Reynolds numbers: 
+\begin{equation}\label{9}
+\frac{\langle F_L \rangle}{\rho \nu^2} \approx 20.9 \left( \frac{r u^*}{\nu} \right)^{2.31}
+\end{equation}
+
+\subsubsection{Turbulent Flow}
+The fast moving fluid has a Reynolds Number of [insert number here?], meaning it is in the turbulent regime. The erratic movement of the fluid eddies that form within the fluid flow cause fluctuations in the force acting on the dust particle and introduces another term in the force balance equation. These eddies also transfer energy to the dust particle and create oscillations in the energy well, giving causing the "rocking" motion in the Rock n Roll model, which will be explained later in this report. 
+
+The particle is located in the laminar boundary layer, the stronger turbulent eddies from the turbulent flow have a high chance of penetrating into the laminar boundary layer to disturb the laminar flow. These turbulent gusts will contribute to the fluctuating component \(f(t)\) of the aerodynamic force couple that acts on the particle. [IS THIS ACCURATE IDK]
+
+The ratio of the fluctuating component \(f(t)\) of the aerodynamic force to the mean aerodynamic force \(\langle{F}\rangle\) is approximately 0.2 to 0.366 based on Hall's measurements (\cite{HALLD1988})
+
+\subsubsection{Fluid velocity and friction velocity}
+somehting about viscous sublayer, log law of friction velocity, together with the dimensionless distance from the wall to to the end of the sublayer.
+
+\subsubsection{Laminar boundary layer} 
+The formulas for lift force and drag force are only valid for a 
+The laminar boundary layer is defined as the thin layer of fluid formed close to a solid surface when a viscous fluid comes into contact with it. The fluid moving close to the surface is moving at a very low velocity with minimal mixing because of the zero-velocity condition at the surface.
+LAMINAR BOUNDARY LAYER IS ACTUALLY NOT LAMINAR 
+IF IT'S A TIME AVERAGED VALUE FOR THE THING THEN IT IS NOT 
+
+\subsection{Particle characteristics}
+
+
+\begin{table}
+    \centering
+    \begin{tabular}{ccc}
+         Parameters&  Units& Value\\
+         Range in radius of graphite particle \([r]\) &  Micrometers \([\mu m]\) & \(0.1 \space to\space 10\)\\
+         Distance between peaks of substrate surface roughness \([a]\) &  \(m\) & \(0.1 \times10^{-8}\)\\
+         Drag amplification factor \([r/a]\) &  Dimensionless & 100\\
+         Minimum separation distance between surface and particle \([z_0]\) &  \(nm\) &  0.4 \\
+         Surface energy \([\gamma]\) &  \(J/m^2\) & \(0.56\) \\
+    \end{tabular}
+    \caption{Table 2: Particle parameters}
+    \label{tab:2}
+\end{table}
+
+\subsubsection{Gravitational force}
+Gravitational forces are always acting on the graphite dust particles. However, because of the miniscule size of particles and the high-velocity fluid flow, the aforementioned lift and drag forces heavily outweigh the gravitational force. Gravitational forces are most significant when the particle size is greater than 500μm (\cite{ISAIFAN2019413}), thus it has been deemed negligible for the rest of the paper.
+
+\subsubsection{Forces generated by Brownian Motion}
+
+Brownian motion describes the random, chaotic motion of particles suspended in a fluid (usually a liquid or gas) and is caused by collisions with fast moving particles in the fluid. These microscopic interactions add up to its total motion. This Brownian motion can be characterised as a stochastic process, which means that it can be described using the Langevin equation, a stochastic differential equation describing how a system evolves when subjected to both deterministic and fluctuating forces: 
+\begin{equation} \label{10}
+    dU_p = K_{Br} dW_i
+\end{equation}
+where \(K_{Br}\) is the diffusion coefficient for Brownian motion and \(dW_i\) is the increment of a Wiener process (a real-valued continuous-time stochastic process with random variable increments) (\cite{henry2018}).
+
+For sub-micron particles, these microscopic forces can impart sufficient kinetic energy to the Brownian particle to overcome the weak adhesive forces that binds it to a surface. Thus, this would also apply to a small group of graphite dust particles in the HTGR , given that the distribution of graphite dust particle radii generated in a HTGR  range from 0.1μm to 10μm. However when considering the other forces acting on the dust particle, Brownian motion has less of an effect on the particle as a whole, and shall be deemed negligible in this report. 
+
+\subsubsection{Inter-particle forces}
+Particle-particle forces occur when two particles are in close proximity to each other, or when the concentration of particles within a certain space is high enough for particles to interact frequently. These interactions need to be considered when accounting for agglomeration or collision events. 
+
+Besides short-range interactions like Van der Waals attractive forces or Pauli repulsive forces (\cite{henry2018}), there exist electrostatic interactions between the dust particles. These can arise from triboelectric charging and frictional charging due to the high speed collisions and frictional contact between particles and with the reactor pipe surface, which cause electrons to be transferred to the dust particles (\cite{SHEN2023118880}). Dust particles or surfaces with opposite charges will be attracted to each other, and vice versa. Attraction or repulsion can still occur even if the opposing particle is not charged, since temporary dipoles can still be induced. 
+
+
+\subsection{Particle-surface characteristics}
+
+Both the graphite dust particles and the substrate surface are not perfectly smooth. In particular, the graphite dust particle is very rarely perfectly spherical in shape, and is able to deform to a certain extent as well. The asperities on the substrate surface are also rarely regular. This results in a non-uniform distribution in the forces acting on the graphite particle, which greatly affects its resuspension factors. 
+
+\subsubsection{Adhesive forces}
+The bonding mechanism between graphite dust and solid substrate surfaces via several adhesion forces depends on the environmental conditions, dust characteristics, surface treatment, and contact surface area. (\cite{ISAIFAN2019413}). 
+
+Interactions between the substrate surface and dust particles are dominated by Van der Waals forces, which are weak distance-dependent forces arising from the instantaneous dipoles created by the movement of electrons. Surface roughness and microstructures at the micron scale can have a significant influence on (\cite{ZHANG2023118877}) the interactions between the surface and the particle. As surface roughness increases, particle adhesion generally decreases due to a decrease in the true contact area between the particle and the surface (when considering that the surface asperities' depth and the particle diameters are roughly of the same magnitude), leading to slightly reduced interaction (\cite{KATAINEN2006524}). 
+
+Besides Van der Waals forces, there also exist the electrostatic forces of attraction and capillary forces. As mentioned before in section 4.2.3, electrostatic attraction between particles and surfaces can increase the adhesion force of the particle onto the substrate surface. The capillary force refers to the attractive force that exists between two dissimilar materials, and dominates at higher humidity values, since the water layer between the dust particle and the substrate surface becomes thick enough to overcome the surface asperity (\cite{ISAIFAN2019413}). However the humidity within the HTGR reactor core and coolant is kept low, as the presence of water can lead to oxidation of the graphite pebbles and lead to further dust formation and reduce thermal and mechanical properties, which may shorten its service time (\cite{YU20082230}). Thus capillary forces are considered negligible in this context. 
+
+WATER INGRESS ACCIDENT AND HUMIDITY 
+
+Though the true adhesive forces between the particles and the substrate is not uniformly distributed, the normalised adhesive force \textit{\(f'_a\)} can be assumed to be a log-normal distribution after renormalising the particle radius. The normalised adhesive force \textit{\(f'_a\)} refers to the ratio between the adhesive force \textit{\(f_a\)} for a real rough substrate to the adhesive force \textit{\(F_a\)} for a perfectly smooth substrate. This distribution will be laid out fully in section 5.2. 
+
+This model assumes that the dust particle will not deform when subjected to forces, and that the adhesion of each non-spherical dust particle can be equated to the adhesion calculated for a spherical dust particle with a certain radius. 
+
+\subsubsection{External factors}
+There are other factors that can increase the adhesive force between the particle and the substrate surface, such as coagulation and high temperature sintering. 
+
+Coagulation refers to the clumping of graphite dust due to the constant high-speed collisions between them. This would start to change the graphite particle size distribution and hence particle and flow characteristics. However, research by Luo et al states that due to the short period of time that the particle is suspended in the air relative to the coagulation timescales, coagulation is not significant in this context (\cite{LUO2006}). 
+
+Long term high-temperature sintering after particle deposition could have a significant impact by increasing the strength of the particle-particle and particle-wall interactions. Studies have shown that the sintered particles exhibit higher friction velocity thresholds for resuspension compared to unsintered particles, which means that the adhesion between the particle and the substrate surface has increased (and so has particle-particle interactions). As the temperature increases or sintering duration increases, the adhesion will increase as well; with the friction velocity threshold increasing by about 33\% for 3μm particles, and 79\% for particles larger than 10μm (\cite{Zhao20252954}). 
+
+
+
+\section{The Rock n Roll Resuspension Model}
+
+There are 4 main types of resuspension models for determining the resuspension rate of a particle deposited onto the surface: the empirical model, the static force balance model, the kinetic energy-balance model and the dynamic probability model (\cite{HU2023}). The RNR resuspension model is one of the energy-balance models, along with the Reeks-Hall model of which it is based upon. 
+
+\subsection{Physical and Energetic Interpretation}
+
+Particles deposited onto a substrate surface can move in many ways, including rolling, sliding and direct detachment. Smaller particles stuck within the viscous boundary layer tend to roll and slide on the surface of the substrate, while larger particles protruding from the viscous boundary layer can interact with near-wall structures, which leads to more frequent direct lift off (\cite{henry2018}). A typ
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{resus_sketch.png}
+    \caption{Figure 1: Sketch showing different particle movements}
+    \label{fig:1}
+\end{figure}
+
+In a physical sense, the turbulent energy from the aerodynamic forces mentioned above is being transferred to the particle that has been deposited onto the substrate surface. However this turbulent energy is not constant or uniform, and hence 
+
+\subsection{Mathematical Model}
+
+Assuming a Gaussian distribution of the aerodynamic force couples gives the resuspension rate as 
+\begin{equation}\label{10}
+p = \frac{
+n_\theta \exp\!\left[-\dfrac{(f_a - \langle{F}\rangle)^2}{2\langle{f^2}\rangle}\right]
+}{
+\frac{1}{2} \left[ 1 + \operatorname{erf}\!\left(
+\dfrac{f_a - \langle{F}\rangle}{\sqrt{2\langle{f^2}\rangle}}
+\right) \right]
+}
+\end{equation}
+Where \(f_a\) is the adhesive fore at the point of contact between the particle and the substrate surface, \(\langle{F}\rangle\) is the mean aerodynamic force couple acting on the particle as calculated above, and \(f(t)\) is the fluctuating part of the aerodynamic force couple. 
+
+\(n_\theta\) refers to the frequency of the forcing motion of the turbulent gusts, which is given by: 
+\begin{equation} \label{11}
+n_\theta = \left( \frac{1}{2\pi} \right) \left( \frac{\langle \dot{f^2} \rangle}{\langle f \rangle^2} \right)^{1/2}
+\end{equation}
+However for this paper, we will be using the value of \(n_\theta\) derived from \cite{HALLD1988}. 
+\begin{equation} \label{12}
+    n_\theta \approx 0.00658 \left( {\frac{u^{*2}}{\nu}}\right)
+\end{equation}
+Finally these can be used to find \(\varphi(f'_a)\) the log-normal distribution of adhesive forces mentioned in section 4.3.1, which is given by: 
+\begin{equation} \label{13}
+    \varphi(f'_a) = \frac{1}{\sqrt{2\pi}} \left( \frac{1}{f'_a \ln \sigma'_a} \right) \exp \left( -\frac{1}{2} \left\{ \frac{\ln( f'_a / \langle f'_a \rangle)}{\ln \sigma'_a} \right\}^2 \right)
+\end{equation}
+The remain fraction \(f_R(t)\), which refers to the fraction of dust particles that are still attached to the substrate surface after a certain period of time: 
+\begin{equation}\label{14}
+    f_R(t) = \int_{0}^{\infty} \varphi(f'_a) \exp \left[ -\int_0^t p(f'_a, t') dt' \right] df'_a
+\end{equation}
+The resuspension fraction, which refers to the fraction of dust particles that have resuspended into the fluid flow and can be represented as \(1-f_R(t)\), is calculated as: 
+\begin{equation} \label{15}
+    \Lambda (t) = \int_0^\infty df'_a \varphi (f'_a) p(f'_a) e^{-p(f')t}
+\end{equation}
+where \(f'_a\) is the normalised adhesive force, which is the ratio of the adhesive force \(f_a\) for a real rough substrate to the adhesive force \(F_a\) (the pull-off force) for a perfectly smooth substrate. \(F_a\) is given by: 
+\begin{equation} \label{16}
+    F_a = \frac{3}{2} \pi \gamma r
+\end{equation}
+where \(\gamma\) refers to the surface energy between the particle and the substrate, a measure of the work required to separate the two surfaces completely apart (i.e. to create a new surface). This equation is derived from the JKR theory of adhesive contact (\cite{borodich2014hertz}), and is based on the direct experimental measurement of the adhesive force, however neglects the effects of elastic deformation on the adhesive force. 
+
+\subsubsection{Biasi Distribution}
+
+Based on the Reeks-Hall model, Biasi et al. introduced a non-linear regression model for the mean \(\langle{f'_a}\rangle\) and standard deviation \(\sigma_a'\) of the adhesive force between the particle and the substrate using single and multilayer resuspension test data. 
+\begin{equation}\label{9}
+        \langle{f'_a}\rangle\ = 0.016 - 0.0023 r^{0.545}
+\end{equation}
+\begin{equation}\label{9}
+        \sigma_a' = 1.8 + 0.136 r^{1.4}
+\end{equation}
+The correlations for the adhesive force distribution parameters were used in the MELCOR codes to get good agreement with the test data from the STORM experiments. The correlations can also be used as 
+
+\section{Results and Analysis}
+
+\subsection{Data validation}
+
+\subsection{Under HTGR start-up conditions}
+
+As the coolant flow in the HTGR is restarted, the 
+
+The additional factor of sintering has to be taken into account as well, because the graphite dust would have deposited onto the pipe walls, and would have been kept at a higher-than-normal temperature for however long the coolant was not flowing for. Thus the force of adhesion would have increased, and this was reflected in the code by increasing the mean adhesion 
+
+linear increase in velocity for now 
+ignore the temperature for now 
+increase adhesion and say "this is what could happen due to sintering, but there is not a lot of data on adhesion surface energy between graphite dust" x2 
+
+\section{Code and graph types}
+
+
+
+\section{Graph comparisons}
+\subsection{Instantaneous resuspension fraction p}
+The probability that a particle in question will resuspend into the fluid given said parameters. 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\linewidth]{p_against_f'a.png}
+    \caption{p against normalized adhesion force f'a}
+    \vspace{-10pt}
+    \label{fig:1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{resusp_vary_meanadhe.png}
+        \caption{p against \textit{u*} while varying mean adhesion force $<f'a>$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{p_vary_sigma'a.png}
+        \caption{p against \textit{u*} while varying standard deviation of adhesive force $\sigma$'a}
+    \end{subfigure}
+    \caption{Comparative analyses of p}
+\end{figure}
+
+\subsection{Adhesive force probability density function against normalized adhesion force f'a}
+given a specific particle size, what is the distribution of adhesive forces for these particles 
+used to make up for the different shapes of particles which would cause variations on 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\linewidth]{pdf_5um.png}
+    \caption{Adhesion pdf}
+    \vspace{-10pt}
+    \label{fig:2}
+\end{figure}
+
+\newpage
+\subsection{Instantaneous suspension rate $\lambda$(t)}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\linewidth]{lambda_t.png}
+    \vspace{-10pt}
+    \caption{Figure 3}
+    \label{lambdat}
+\end{figure}
+
+\subsection{Remain fraction against friction velocity \textit{u*}}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\linewidth]{remain_frac_varyR.png}
+    \caption{Vary particle size R}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{remain_frac_vary_mean.png}
+        \caption{Vary mean adhesion force $<f'a>$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{remain_frac_vary_sdsigma.png}
+        \caption{Vary standard deviation of adhesive force $\sigma$'a}
+    \end{subfigure}
+    \caption{Comparative analyses of remain fraction}
+\end{figure}
+
+\newpage
+\subsection{Adhesion force probability density function against normalized adhesion force f'a while varying the mean adhesion force $<f'a>$}
+for different particle diameters, what is the trend of the remain fraction as the normalized adhesion force varies across the board
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{pdf_against_f'a.png}
+        \caption{written code, pdf against f'a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{pdf_different_mean.png}
+        \caption{RNR paper graph, pdf against f'a}
+    \end{subfigure}
+    \caption{Comparative analyses of pdf function against f'a while varying mean, between own written code and graph in the original paper.}
+    \vspace{-10pt}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{pdf_against_f'a_change_sigma.png}
+        \caption{written code, pdf against f'a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{rnr_paper_pdf_against_f'a.png}
+        \caption{RNR paper graph, pdf against f'a}
+    \end{subfigure}
+    \caption{Comparative analyses of pdf function against f'a while varying standard deviation, between own written code and graph in the original paper.}
+\end{figure}
+
+Varying mean will shift the graph, while varying the standard deviation will change the curvature of the graph (can be seen in both 3.1 and 3.4) \par
+For variation of particle size R in 3.4, both the horizontal translation of the graph and the gradient of the graph should change as they are both dependent on R (based on the Biasi fitting distribution). However, as the magnitude of the change is too small, the change in the gradient is also not as obvious. \par
+Not very sure if the graph in 3.5 is accurate, the graphs in the paper are slightly different from the graphs that I generated. This could be because of the difference in the axes limits, but figure 7 seems a bit off. Figure 8 is closer to the actual graphs in the paper. 
+
+\end{document}

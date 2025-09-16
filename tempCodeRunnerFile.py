@@ -1,0 +1,1 @@
+plt.plot(time_range, result_sinter[fric_velo], '-', label=f'Sintered, u*={fric_velo} m/s')
